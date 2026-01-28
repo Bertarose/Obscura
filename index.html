@@ -22,6 +22,7 @@ body {
   background: radial-gradient(circle at top, #000000, #1a001f);
   color:white;
   font-family:Inter,sans-serif;
+  min-height: 100vh;
 }
 
 header {
@@ -33,7 +34,13 @@ h1 {
   margin: 0;
   letter-spacing: 2px;
   font-weight: 700;
-  color: white;
+}
+
+.header-img {
+  width:120px;
+  display:block;
+  margin:0 auto 15px;
+  border-radius:12px;
 }
 
 .quote {
@@ -62,7 +69,7 @@ h1 {
   height:100%;
   width:0%;
   background:linear-gradient(90deg,#9b6cff,#5ac8ff);
-  transition:width .6s ease;
+  transition:width .4s ease;
 }
 
 .controls {
@@ -85,7 +92,7 @@ input, select {
 
 .grid {
   display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap:20px;
 }
 
@@ -94,8 +101,7 @@ input, select {
   border-radius:22px;
   background:var(--glass);
   backdrop-filter:var(--blur);
-  position:relative;
-  transition:.35s;
+  transition:.3s ease;
   cursor: pointer;
   border: 1px solid rgba(255,255,255,0.05);
 }
@@ -111,7 +117,7 @@ input, select {
   margin-bottom:10px;
   aspect-ratio: 2/3;
   object-fit: cover;
-  background: #111;
+  background: #111; /* Fond noir si l'image charge mal */
 }
 
 .card h3 { margin:0; font-size:1.05rem; }
@@ -123,19 +129,12 @@ input, select {
   font-size:11px;
   padding:4px 10px;
   border-radius:999px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.15);
 }
 
 .seen {
-  opacity:.3;
+  opacity:.35;
   filter:grayscale(1);
-}
-
-.header-img {
-  width:120px;
-  display:block;
-  margin:0 auto 15px;
-  border-radius:12px;
 }
 
 .hint {
@@ -145,14 +144,13 @@ input, select {
 }
 </style>
 </head>
-
 <body>
 
 <header>
   <img src="images/logo.jpg" alt="Logo" class="header-img" onerror="this.style.display='none'">
   <h1>WEIRD CINEMA ARCHIVE</h1>
-  <div class="quote" id="quote"></div>
-  <div class="counter" id="counter">🎞️ 0 / 0 visions</div>
+  <div class="quote" id="quote">Exploration des marges...</div>
+  <div class="counter" id="counter">🎞️ 0 visions intégrées</div>
   <div class="progress"><span id="bar"></span></div>
 </header>
 
@@ -174,10 +172,10 @@ input, select {
 <div class="grid" id="grid"></div>
 
 <script>
-// --- DONNÉES ---
+// --- TA LISTE DE FILMS ---
+// J'ai inclus quelques exemples, colle TOUS tes films ici entre les crochets [ ]
 const films = [
-  let films = [
-  // --- WEIRD ---
+ // --- WEIRD ---
   {title:"The Last Wave", year:1977, desc:"Weir Australie aborigène, apocalypse onirique mystique", category:"Weird", img:"images/The%20Last%20Wave.jpg"},
   {title:"Picnic at Hanging Rock", year:1975, desc:"Weir disparition mystérieuse, atmosphère envoûtante victorienne", category:"Weird", img:"images/Picnic%20at%20Hanging%20Rock.jpg"},
   {title:"Werckmeister Harmonies", year:2000, desc:"Tarr baleine géante, chaos rural hongrois, plans longs", category:"Weird", img:"images/Werckmeister%20Harmonies.jpg"},
@@ -388,6 +386,7 @@ const films = [
   {title:"Dog Star Man", year:1961, desc:"Épique expérimental, désir", category:"Queer", img:"images/Dog%20Star%20Man.jpg"},
   {title:"Suture", year:1993, desc:"Identité, doubles thriller expérimental", category:"Queer", img:"images/Suture.jpg"}
 ];
+
 ];
 
 const quotes = [
@@ -397,8 +396,10 @@ const quotes = [
   "Cinéma pour esprits divergents."
 ];
 
-// --- LOGIQUE ---
+// Initialisation du stockage "vu"
 const savedSeen = JSON.parse(localStorage.getItem("seenFilms") || "{}");
+
+// Éléments du DOM
 const grid = document.getElementById("grid");
 const filter = document.getElementById("filter");
 const search = document.getElementById("search");
@@ -428,7 +429,7 @@ function render() {
         <h3>${f.title} (${f.year})</h3>
         <p>${f.desc}</p>
         <span class="badge">${f.category}</span>
-        <div class="hint">Cliquer pour marquer vu</div>
+        <div class="hint">${isSeen ? "Vu" : "Cliquer pour marquer vu"}</div>
       `;
 
       card.onclick = () => {
@@ -441,17 +442,18 @@ function render() {
     }
   });
 
+  // Mise à jour de l'interface
   counterText.innerText = `🎞️ ${seenCount} / ${films.length} visions intégrées`;
   bar.style.width = films.length > 0 ? (seenCount / films.length * 100) + "%" : "0%";
 }
 
-// Initialisation
+// Lancement
 document.getElementById("quote").innerText = quotes[Math.floor(Math.random()*quotes.length)];
 filter.onchange = render;
 search.oninput = render;
 
-// Lancement au chargement de la page
-window.onload = render;
+// On s'assure que le rendu se fait après le chargement du DOM
+window.addEventListener('DOMContentLoaded', render);
 </script>
 
 </body>

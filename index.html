@@ -174,18 +174,9 @@ input, select {
 <div class="grid" id="grid"></div>
 
 <script>
-const quotes = [
-  "Certains films ne veulent pas être compris.",
-  "Archive de visions étranges.",
-  "Des images qui laissent des traces.",
-  "Cinéma pour esprits divergents.",
-  "Tous les films ne s’expliquent pas."
-];
-
-document.getElementById("quote").innerText =
-  quotes[Math.floor(Math.random()*quotes.length)];
-
-let films = [
+// --- DONNÉES ---
+const films = [
+  let films = [
   // --- WEIRD ---
   {title:"The Last Wave", year:1977, desc:"Weir Australie aborigène, apocalypse onirique mystique", category:"Weird", img:"images/The%20Last%20Wave.jpg"},
   {title:"Picnic at Hanging Rock", year:1975, desc:"Weir disparition mystérieuse, atmosphère envoûtante victorienne", category:"Weird", img:"images/Picnic%20at%20Hanging%20Rock.jpg"},
@@ -396,6 +387,7 @@ let films = [
   {title:"Wavelength", year:1967, desc:"Le son & l’espace abstraction", category:"Queer", img:"images/Wavelength.jpg"},
   {title:"Dog Star Man", year:1961, desc:"Épique expérimental, désir", category:"Queer", img:"images/Dog%20Star%20Man.jpg"},
   {title:"Suture", year:1993, desc:"Identité, doubles thriller expérimental", category:"Queer", img:"images/Suture.jpg"}
+];
 ];
 
 const quotes = [

@@ -19,12 +19,11 @@
 body {
   margin:0;
   padding:20px;
-   background: radial-gradient(circle at top, #000000, #1a001f); /* noir en haut, mauve foncé en bas */
+  background: radial-gradient(circle at top, #000000, #1a001f);
   color:white;
   font-family:Inter,sans-serif;
 }
 
-/* ===== HEADER ===== */
 header {
   text-align:center;
   margin-bottom:30px;
@@ -34,10 +33,14 @@ h1 {
   margin: 0;
   letter-spacing: 2px;
   font-weight: 700;
-  color: white; /* texte blanc */
-  background: none; /* supprime le gradient */
-  -webkit-background-clip: initial;
-  -webkit-text-fill-color: initial;
+  color: white;
+}
+
+.header-img {
+  width:120px;
+  display:block;
+  margin:0 auto 15px;
+  border-radius:12px;
 }
 
 .quote {
@@ -51,7 +54,6 @@ h1 {
   opacity:.8;
 }
 
-/* progress */
 .progress {
   width:100%;
   max-width:420px;
@@ -69,7 +71,6 @@ h1 {
   transition:width .6s ease;
 }
 
-/* ===== CONTROLS ===== */
 .controls {
   display:flex;
   gap:12px;
@@ -78,23 +79,29 @@ h1 {
   margin-bottom:25px;
 }
 
-input, select {
+input, select, button {
   background:#111118;
   color:white;
   border:none;
   padding:12px 16px;
   border-radius:14px;
   font-size:14px;
+  cursor: pointer;
 }
 
-/* ===== GRID ===== */
+button#random-btn {
+  background: linear-gradient(135deg, #9b6cff, #ff355d);
+  font-weight: bold;
+}
+
 .grid {
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  /* Correction ici : on limite la taille maximum des colonnes à 350px */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 350px));
   gap:20px;
+  justify-content: center;
 }
 
-/* ===== CARD ===== */
 .card {
   padding:18px;
   border-radius:22px;
@@ -102,10 +109,12 @@ input, select {
   backdrop-filter:var(--blur);
   position:relative;
   transition:.35s;
+  cursor: pointer;
 }
 
 .card:hover {
   transform:translateY(-4px);
+  background: rgba(255,255,255,0.1);
 }
 
 .card h3 {
@@ -117,6 +126,7 @@ input, select {
   font-size:.9rem;
   opacity:.85;
   margin-top:6px;
+  line-height: 1.4;
 }
 
 .badge {
@@ -125,40 +135,40 @@ input, select {
   font-size:11px;
   padding:4px 10px;
   border-radius:999px;
-  opacity:.85;
+  font-weight: 500;
+  color: #fff;
 }
 
-/* categories aura */
+/* Couleurs spécifiques par catégorie */
 .Weird { box-shadow:0 0 0 1px #9b6cff44; }
+.Weird .badge { background: #9b6cff; }
 .SF { box-shadow:0 0 0 1px #5ac8ff44; }
+.SF .badge { background: #5ac8ff; }
 .Dystopie { box-shadow:0 0 0 1px #ff784a44; }
+.Dystopie .badge { background: #ff784a; }
 .Psyché { box-shadow:0 0 0 1px #6dff9a44; }
+.Psyché .badge { background: #6dff9a; color: #000; }
 .Horreur { box-shadow:0 0 0 1px #ff355d44; }
+.Horreur .badge { background: #ff355d; }
 .Expérimental { box-shadow:0 0 0 1px #ff8bdc44; }
+.Expérimental .badge { background: #ff8bdc; color: #000; }
 .Thriller { box-shadow:0 0 0 1px #ffc24b44; }
+.Thriller .badge { background: #ffc24b; color: #000; }
 .Queer { box-shadow:0 0 0 1px #ff424b44; }
+.Queer .badge { background: #ff424b; }
 
-/* seen */
 .seen {
-  opacity:.45;
+  opacity:.35;
   filter:grayscale(.8) blur(.3px);
-}
-
-.header-img {
-  width:120px;           /* taille de l'image */
-  display:block;         /* pour centrer l'image */
-  margin:0 auto 15px;    /* espace en dessous */
-  border-radius:12px;    /* coins arrondis */
 }
 
 .hint {
   font-size:10px;
   opacity:.4;
-  margin-top:6px;
+  margin-top:10px;
 }
 </style>
 </head>
-
 <body>
 
 <header>
@@ -172,7 +182,7 @@ input, select {
 <div class="controls">
   <input type="text" id="search" placeholder="🔍 chercher un film">
   <select id="filter">
-    <option value="All">Tous</option>
+    <option value="All">Tous les genres</option>
     <option>Weird</option>
     <option>SF</option>
     <option>Dystopie</option>
@@ -182,6 +192,7 @@ input, select {
     <option>Thriller</option>
     <option>Queer</option>
   </select>
+  <button id="random-btn">🎲 Film aléatoire</button>
 </div>
 
 <div class="grid" id="grid"></div>
@@ -198,9 +209,8 @@ const quotes = [
 document.getElementById("quote").innerText =
   quotes[Math.floor(Math.random()*quotes.length)];
 
-
 let films = [
-  // --- WEIRD ---
+  // --- Liste complète incluant les ajouts Techno/Auteur ---
   {title:"The Last Wave", year:1977, desc:"Weir Australie aborigène, apocalypse onirique mystique", category:"Weird", img:"images/The%20Last%20Wave.jpg"},
   {title:"Picnic at Hanging Rock", year:1975, desc:"Weir disparition mystérieuse, atmosphère envoûtante victorienne", category:"Weird", img:"images/Picnic%20at%20Hanging%20Rock.jpg"},
   {title:"Werckmeister Harmonies", year:2000, desc:"Tarr baleine géante, chaos rural hongrois, plans longs", category:"Weird", img:"images/Werckmeister%20Harmonies.jpg"},
@@ -249,10 +259,8 @@ let films = [
   {title:"The Cremator", year:1969, desc:"Tchécoslovaquie, obsession crématorium, montage hypnotique noir", category:"Weird", img:"images/The%20Cremator.jpg"},
   {title:"Angst", year:1983, desc:"Autriche, POV tueur, caméra révolutionnaire, ultra-réaliste sombre", category:"Weird", img:"images/Angst.jpg"},
   {title:"On the Silver Globe", year:1988, desc:"Żuławski épopée lunaire maudite, philosophie sauvage, SF mystique", category:"Weird", img:"images/On%20the%20Silver%20Globe.jpg"},
-  {title:"Victoria", year:2015, desc:"Schipper Berlin un seul plan-séquence, club techno, braquage, dérive nocturne", category:"Weird", img:"images/Victoria.jpg"},
-  {title:"Eden", year:2014, desc:"Mia Hansen-Løve French Touch, montée et chute de la house, nostalgie clubbing", category:"Weird", img:"images/Eden.jpg"},
-
-  // --- SF ---
+  {title:"Victoria", year:2015, desc:"Schipper Berlin un seul plan-séquence, club techno, braquage nocturne", category:"Weird", img:"images/Victoria.jpg"},
+  {title:"Eden", year:2014, desc:"Mia Hansen-Løve French Touch, montée et chute de la house", category:"Weird", img:"images/Eden.jpg"},
   {title:"Nowhere", year:1997, desc:"Araki SF teen Los Angeles, aliens pastel surréaliste", category:"SF", img:"images/Nowhere.jpg"},
   {title:"High Life", year:2018, desc:"Denis Claire prison spatiale, trou noir expérience sexuelle", category:"SF", img:"images/High%20Life.jpg"},
   {title:"Color Out of Space", year:2019, desc:"Stanley Lovecraft Cage, météorite mutante, horreur cosmique", category:"SF", img:"images/Color%20Out%20of%20Space.jpg"},
@@ -280,8 +288,6 @@ let films = [
   {title:"The Endless", year:2017, desc:"Secte temporelle, boucle cosmique", category:"SF", img:"images/The%20Endless.jpg"},
   {title:"Coherence", year:2013, desc:"Réalités parallèles, dîner cosmique", category:"SF", img:"images/Coherence.jpg"},
   {title:"Prospect", year:2018, desc:"Planète hostile, relation père-fille", category:"SF", img:"images/Prospect.jpg"},
-
-  // --- DYSTOPIE ---
   {title:"The Turin Horse", year:2011, desc:"Tarr répétition nihiliste, fin du monde quotidienne", category:"Dystopie", img:"images/The%20Turin%20Horse.jpg"},
   {title:"Brazil", year:1985, desc:"Gilliam bureaucratie absurde, cauchemar rétrofuturiste", category:"Dystopie", img:"images/Brazil.jpg"},
   {title:"A Clockwork Orange", year:1971, desc:"Kubrick ultraviolence, contrôle comportemental", category:"Dystopie", img:"images/A%20Clockwork%20Orange.jpg"},
@@ -298,9 +304,7 @@ let films = [
   {title:"Underground", year:1995, desc:"Kusturica guerre balkanique, farce tragique", category:"Dystopie", img:"images/Underground.jpg"},
   {title:"World on a Wire", year:1973, desc:"Fassbinder simulation virtuelle, paranoïa néon", category:"Dystopie", img:"images/World%20on%20a%20Wire.jpg"},
   {title:"Hard to Be a God", year:2013, desc:"German planète médiévale, boue chaos viscéral", category:"Dystopie", img:"images/Hard%20to%20be%20a%20God.jpg"},
-
-  // --- PSYCHÉ ---
-  {title:"Requiem for a Dream", year:2000, desc:"Aronofsky addiction spirale, montage rapide, trauma visuel", category:"Psyché", img:"images/Requiem%20for%20a%20Dream.jpg"},
+  {title:"Requiem for a Dream", year:2000, desc:"Aronofsky addiction spirale, montage rapide, trauma", category:"Psyché", img:"images/Requiem%20for%20a%20Dream.jpg"},
   {title:"Trainspotting", year:1996, desc:"Boyle Édimbourg héroïne, énergie punk britannique", category:"Psyché", img:"images/Trainspotting.jpg"},
   {title:"Black Swan", year:2010, desc:"Aronofsky ballet psychose, perfection destructrice", category:"Psyché", img:"images/Black%20Swan.jpg"},
   {title:"Mother!", year:2017, desc:"Aronofsky allégorie biblique, maison cauchemar", category:"Psyché", img:"images/Mother!.jpg"},
@@ -322,8 +326,6 @@ let films = [
   {title:"Fear and Loathing in Las Vegas", year:1998, desc:"Gilliam drogues diverses, road-trip psyché", category:"Psyché", img:"images/Fear%20and%20Loathing.jpg"},
   {title:"Spun", year:2002, desc:"Åkerlund meth culture, accélération constante", category:"Psyché", img:"images/Spun.jpg"},
   {title:"Natural Born Killers", year:1994, desc:"Stone voyage acide médiatique, montage saturé", category:"Psyché", img:"images/Natural%20Born%20Killers.jpg"},
-
-  // --- HORREUR ---
   {title:"The Void", year:2016, desc:"Hôpital culte, body horror Lovecraft", category:"Horreur", img:"images/The%20Void.jpg"},
   {title:"The Lodge", year:2019, desc:"Huis clos neige, secte trauma, manipulation", category:"Horreur", img:"images/The%20Lodge.jpg"},
   {title:"The Night House", year:2020, desc:"Veuve maison mystères, deuil surnaturel", category:"Horreur", img:"images/The%20Night%20House.jpg"},
@@ -346,10 +348,8 @@ let films = [
   {title:"The Lighthouse", year:2019, desc:"Eggers phare folie, noir et blanc hypnotique", category:"Horreur", img:"images/The%20Lighthouse.jpg"},
   {title:"Candyman", year:1992, desc:"Rose urban horror folklore, vengeance", category:"Horreur", img:"images/Candyman.jpg"},
   {title:"Pet Sematary", year:1989, desc:"Kramer deuil famille, résurrection sinistre", category:"Horreur", img:"images/Pet%20Sematary.jpg"},
-
-  // --- EXPÉRIMENTAL ---
   {title:"The Act of Killing", year:2012, desc:"Oppenheimer génocide indonésien rejoué", category:"Expérimental", img:"images/The%20Act%20of%20Killing.jpg"},
-  {title:"The Look of Silence", year:2014, desc:"Oppenheimer suite confrontation victime/meurtrier", category:"Expérimental", img:"images/The%20Look%20of%20Silence.jpg"},
+  {title:"The Look of Silence", year:2014, desc:"Oppenheimer suite confrontation victime", category:"Expérimental", img:"images/The%20Look%20of%20Silence.jpg"},
   {title:"Skinamarink", year:2022, desc:"Enfants maison nuit, terreur liminale", category:"Expérimental", img:"images/Skinamarink.jpg"},
   {title:"Man with a Movie Camera", year:1929, desc:"Vertov symphonie urbaine, montage révolutionnaire", category:"Expérimental", img:"images/Man%20with%20a%20Movie%20Camera.jpg"},
   {title:"Holy Motors", year:2012, desc:"Carax transformations, performance cinéma", category:"Expérimental", img:"images/Holy%20Motors.jpg"},
@@ -365,8 +365,6 @@ let films = [
   {title:"Begotten", year:1989, desc:"Merhige genèse gore B&W, cauchemar mythologique", category:"Expérimental", img:"images/Begotten.jpg"},
   {title:"Sweet Movie", year:1974, desc:"Makavejev satire radicale, choc politique", category:"Expérimental", img:"images/Sweet%20Movie.jpg"},
   {title:"BPM (Beats Per Minute)", year:2017, desc:"Campillo Act Up Paris, house music comme survie", category:"Expérimental", img:"images/BPM.jpg"},
-
-  // --- THRILLER ---
   {title:"The Invitation", year:2015, desc:"Dîner retrouvailles, paranoia slow-burn", category:"Thriller", img:"images/The%20Invitation.jpg"},
   {title:"Gone Girl", year:2014, desc:"Fincher disparition, manipulation médiatique", category:"Thriller", img:"images/Gone%20Girl.jpg"},
   {title:"Zodiac", year:2007, desc:"Fincher enquête obsessionnelle, méthodique", category:"Thriller", img:"images/Zodiac.jpg"},
@@ -378,13 +376,11 @@ let films = [
   {title:"The Game", year:1997, desc:"Fincher mystère jeux contrôle, suspense", category:"Thriller", img:"images/The%20Game.jpg"},
   {title:"Burning", year:2018, desc:"Lee Chang-dong Corée, obsession, tension de classe", category:"Thriller", img:"images/Burning.jpg"},
   {title:"Cure", year:1997, desc:"Kurosawa Japon, hypnose meurtre, métaphysique", category:"Thriller", img:"images/Cure.jpg"},
-  {title:"The Handmaiden", year:2016, desc:"Park Chan-wook Corée, érotisme arnaque, esthétique", category:"Thriller", img:"images/The%20Handmaiden.jpg"},
+  {title:"The Handmaiden", year:2016, desc:"Park Chan-wook Corée, érotisme arnaque", category:"Thriller", img:"images/The%20Handmaiden.jpg"},
   {title:"The Night of the Hunter", year:1955, desc:"Laughton conte noir, expressionnisme religieux", category:"Thriller", img:"images/The%20Night%20of%20the%20Hunter.jpg"},
   {title:"Berlin Calling", year:2008, desc:"Kalkbrenner DJ techno, drogues et création", category:"Thriller", img:"images/Berlin%20Calling.jpg"},
   {title:"Groove", year:2000, desc:"SF rave clandestine, première prise d'extasy", category:"Thriller", img:"images/Groove.jpg"},
-  {title:"Human Traffic", year:1999, desc:"UK clubbing culture, jungle & techno, générationnel", category:"Thriller", img:"images/Human%20Traffic.jpg"},
-
-  // --- QUEER ---
+  {title:"Human Traffic", year:1999, desc:"UK clubbing culture, jungle & techno", category:"Thriller", img:"images/Human%20Traffic.jpg"},
   {title:"Liquid Sky", year:1982, desc:"New wave NYC, aliens & androgynie", category:"Queer", img:"images/Liquid%20Sky.jpg"},
   {title:"Mute", year:2018, desc:"Cyberpunk Berlin, identité défaillante", category:"Queer", img:"images/Mute.jpg"},
   {title:"Thelma", year:2017, desc:"Pouvoirs psychiques & désir, SF nordique", category:"Queer", img:"images/Thelma.jpg"},
@@ -411,19 +407,17 @@ let films = [
   {title:"Dog Star Man", year:1961, desc:"Épique expérimental, désir", category:"Queer", img:"images/Dog%20Star%20Man.jpg"},
   {title:"Suture", year:1993, desc:"Identité, doubles thriller expérimental", category:"Queer", img:"images/Suture.jpg"}
 ];
-// restore seen
+
 const saved = JSON.parse(localStorage.getItem("seenFilms") || "{}");
-films.forEach(f=>{
-  if(saved[f.title]) f.seen = true;
-});
+films.forEach(f=>{ if(saved[f.title]) f.seen = true; });
 
 const grid = document.getElementById("grid");
 const filter = document.getElementById("filter");
 const search = document.getElementById("search");
+const randomBtn = document.getElementById("random-btn");
 
 function render() {
   grid.innerHTML = "";
-
   const visible = films.filter(f=>{
     const matchCat = filter.value==="All" || f.category===filter.value;
     const matchTxt = f.title.toLowerCase().includes(search.value.toLowerCase());
@@ -433,13 +427,18 @@ function render() {
   visible.forEach(f=>{
     const card = document.createElement("div");
     card.className = `card ${f.category} ${f.seen?"seen":""}`;
+    card.id = `movie-${f.title.replace(/\s+/g, '-').toLowerCase()}`;
     card.innerHTML = `
-  <img src="${f.img}" alt="${f.title}" style="width:100%; border-radius:12px; margin-bottom:10px;">
-  <h3>${f.title} (${f.year})</h3>
-  <p>${f.desc}</p>
-  <span class="badge">${f.category}</span>
-  <div class="hint">tap ou swipe → vu</div>
-`;
+      <img src="${f.img}" alt="${f.title}" style="width:100%; border-radius:12px; margin-bottom:10px;">
+      <h3>${f.title} (${f.year})</h3>
+      <p>${f.desc}</p>
+      <span class="badge">${f.category}</span>
+      <div class="hint">clique pour marquer comme vu</div>
+    `;
+
+    card.querySelector('img').onerror = function() {
+      this.src = 'https://via.placeholder.com/300x450/111118/FFFFFF?text=No+Image';
+    };
 
     card.onclick = ()=>{
       f.seen = !f.seen;
@@ -447,22 +446,29 @@ function render() {
       localStorage.setItem("seenFilms", JSON.stringify(saved));
       render();
     };
-
     grid.appendChild(card);
   });
 
   const seenCount = films.filter(f=>f.seen).length;
-  document.getElementById("counter").innerText =
-    `🎞️ ${seenCount} / ${films.length} visions intégrées`;
-
-  document.getElementById("bar").style.width =
-    (seenCount / films.length * 100) + "%";
+  document.getElementById("counter").innerText = `🎞️ ${seenCount} / ${films.length} visions intégrées`;
+  document.getElementById("bar").style.width = (seenCount / films.length * 100) + "%";
 }
+
+randomBtn.onclick = () => {
+  const notSeen = films.filter(f => !f.seen);
+  if (notSeen.length === 0) { alert("Tout a été vu !"); return; }
+  const randomMovie = notSeen[Math.floor(Math.random() * notSeen.length)];
+  filter.value = "All";
+  search.value = randomMovie.title;
+  render();
+  // Animation de surbrillance
+  const target = document.getElementById(`movie-${randomMovie.title.replace(/\s+/g, '-').toLowerCase()}`);
+  if(target) target.style.boxShadow = "0 0 40px #9b6cff";
+};
 
 filter.onchange = render;
 search.oninput = render;
 render();
 </script>
-
 </body>
 </html>

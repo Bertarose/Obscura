@@ -4,153 +4,44 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Weird Cinema Archive</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
-:root {
-  --bg:#060608;
-  --glass:rgba(255,255,255,.06);
-  --blur:blur(20px);
-}
-
+:root { --bg:#060608; --glass:rgba(255,255,255,.06); --blur:blur(20px); }
 * { box-sizing:border-box; }
+body { margin:0; padding:20px; background: radial-gradient(circle at top, #000000, #1a001f); color:white; font-family:Inter,sans-serif; min-height: 100vh; }
 
-body {
-  margin:0;
-  padding:20px;
-  background: radial-gradient(circle at top, #000000, #1a001f);
-  color:white;
-  font-family:Inter,sans-serif;
-  min-height: 100vh;
+header { text-align:center; margin-bottom:30px; }
+.header-img { width:120px; display:block; margin:0 auto 15px; border-radius:12px; }
+
+.progress { width:100%; max-width:420px; height:6px; margin:12px auto 0; border-radius:999px; background:rgba(255,255,255,.08); overflow:hidden; }
+#bar { display:block; height:100%; width:0%; background:linear-gradient(90deg,#9b6cff,#5ac8ff); transition:width .4s ease; }
+
+.controls { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom:25px; }
+input, select { background:#111118; color:white; border:none; padding:12px 16px; border-radius:14px; font-size:14px; outline:none; }
+
+.grid { 
+    display:grid; 
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+    gap:20px; 
+    min-height: 200px; /* Force l'affichage de la zone */
 }
 
-header {
-  text-align:center;
-  margin-bottom:30px;
-}
-
-h1 {
-  margin: 0;
-  letter-spacing: 2px;
-  font-weight: 700;
-}
-
-.header-img {
-  width:120px;
-  display:block;
-  margin:0 auto 15px;
-  border-radius:12px;
-}
-
-.quote {
-  font-size:.9rem;
-  opacity:.7;
-  margin:10px 0 15px;
-  min-height: 1.2em;
-}
-
-.counter {
-  font-size:.85rem;
-  opacity:.8;
-}
-
-.progress {
-  width:100%;
-  max-width:420px;
-  height:6px;
-  margin:12px auto 0;
-  border-radius:999px;
-  background:rgba(255,255,255,.08);
-  overflow:hidden;
-}
-.progress span {
-  display:block;
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#9b6cff,#5ac8ff);
-  transition:width .4s ease;
-}
-
-.controls {
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  justify-content:center;
-  margin-bottom:25px;
-}
-
-input, select {
-  background:#111118;
-  color:white;
-  border:none;
-  padding:12px 16px;
-  border-radius:14px;
-  font-size:14px;
-  outline: none;
-}
-
-.grid {
-  display:grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap:20px;
-}
-
-.card {
-  padding:18px;
-  border-radius:22px;
-  background:var(--glass);
-  backdrop-filter:var(--blur);
-  transition:.3s ease;
-  cursor: pointer;
-  border: 1px solid rgba(255,255,255,0.05);
-}
-
-.card:hover {
-  transform:translateY(-4px);
-  background:rgba(255,255,255,0.1);
-}
-
-.card img {
-  width:100%;
-  border-radius:12px;
-  margin-bottom:10px;
-  aspect-ratio: 2/3;
-  object-fit: cover;
-  background: #111; /* Fond noir si l'image charge mal */
-}
-
-.card h3 { margin:0; font-size:1.05rem; }
-.card p { font-size:.9rem; opacity:.85; margin-top:6px; line-height: 1.4; }
-
-.badge {
-  display:inline-block;
-  margin-top:10px;
-  font-size:11px;
-  padding:4px 10px;
-  border-radius:999px;
-  background: rgba(255,255,255,0.15);
-}
-
-.seen {
-  opacity:.35;
-  filter:grayscale(1);
-}
-
-.hint {
-  font-size:10px;
-  opacity:.4;
-  margin-top:10px;
-}
+.card { padding:18px; border-radius:22px; background:var(--glass); backdrop-filter:var(--blur); transition:.3s; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); }
+.card img { width:100%; border-radius:12px; aspect-ratio: 2/3; object-fit: cover; background:#111; }
+.card h3 { margin:10px 0 5px; font-size:1.05rem; }
+.card p { font-size:.85rem; opacity:.7; line-height:1.4; }
+.badge { display:inline-block; margin-top:10px; font-size:10px; padding:4px 10px; border-radius:999px; background:rgba(255,255,255,0.1); }
+.seen { opacity:0.3; filter:grayscale(1); }
 </style>
 </head>
+
 <body>
 
 <header>
   <img src="images/logo.jpg" alt="Logo" class="header-img" onerror="this.style.display='none'">
   <h1>WEIRD CINEMA ARCHIVE</h1>
-  <div class="quote" id="quote">Exploration des marges...</div>
-  <div class="counter" id="counter">🎞️ 0 visions intégrées</div>
+  <div id="counter" style="margin-top:10px; opacity:0.8; font-size:0.9rem;">Initialisation...</div>
   <div class="progress"><span id="bar"></span></div>
 </header>
 
@@ -172,8 +63,8 @@ input, select {
 <div class="grid" id="grid"></div>
 
 <script>
-// --- TA LISTE DE FILMS ---
-// J'ai inclus quelques exemples, colle TOUS tes films ici entre les crochets [ ]
+// --- DONNÉES ---
+// Remplace cette liste par ta liste complète de films
 const films = [
  // --- WEIRD ---
   {title:"The Last Wave", year:1977, desc:"Weir Australie aborigène, apocalypse onirique mystique", category:"Weird", img:"images/The%20Last%20Wave.jpg"},
@@ -389,71 +280,55 @@ const films = [
 
 ];
 
-const quotes = [
-  "Certains films ne veulent pas être compris.",
-  "Archive de visions étranges.",
-  "Des images qui laissent des traces.",
-  "Cinéma pour esprits divergents."
-];
-
-// Initialisation du stockage "vu"
+// --- LOGIQUE ---
 const savedSeen = JSON.parse(localStorage.getItem("seenFilms") || "{}");
 
-// Éléments du DOM
-const grid = document.getElementById("grid");
-const filter = document.getElementById("filter");
-const search = document.getElementById("search");
-const bar = document.getElementById("bar");
-const counterText = document.getElementById("counter");
-
 function render() {
+  const grid = document.getElementById("grid");
+  const filterVal = document.getElementById("filter").value;
+  const searchTxt = document.getElementById("search").value.toLowerCase();
+  
   grid.innerHTML = "";
   let seenCount = 0;
-
-  const searchTerm = search.value.toLowerCase();
-  const filterValue = filter.value;
 
   films.forEach(f => {
     const isSeen = !!savedSeen[f.title];
     if(isSeen) seenCount++;
 
-    const matchCat = filterValue === "All" || f.category === filterValue;
-    const matchTxt = f.title.toLowerCase().includes(searchTerm) || f.desc.toLowerCase().includes(searchTerm);
+    const matchCat = filterVal === "All" || f.category === filterVal;
+    const matchTxt = f.title.toLowerCase().includes(searchTxt);
 
     if (matchCat && matchTxt) {
       const card = document.createElement("div");
-      card.className = `card ${f.category} ${isSeen ? "seen" : ""}`;
-      
+      card.className = `card ${isSeen ? 'seen' : ''}`;
       card.innerHTML = `
-        <img src="${f.img}" alt="${f.title}" onerror="this.src='https://via.placeholder.com/300x450/111/fff?text=${encodeURIComponent(f.title)}'">
+        <img src="${f.img}" onerror="this.src='https://via.placeholder.com/300x450/111/fff?text=Image+Manquante'">
         <h3>${f.title} (${f.year})</h3>
         <p>${f.desc}</p>
-        <span class="badge">${f.category}</span>
-        <div class="hint">${isSeen ? "Vu" : "Cliquer pour marquer vu"}</div>
+        <div class="badge">${f.category}</div>
       `;
-
+      
       card.onclick = () => {
         savedSeen[f.title] = !savedSeen[f.title];
         localStorage.setItem("seenFilms", JSON.stringify(savedSeen));
         render();
       };
-
+      
       grid.appendChild(card);
     }
   });
 
-  // Mise à jour de l'interface
-  counterText.innerText = `🎞️ ${seenCount} / ${films.length} visions intégrées`;
-  bar.style.width = films.length > 0 ? (seenCount / films.length * 100) + "%" : "0%";
+  // Mise à jour compteur
+  document.getElementById("counter").innerText = `🎞️ ${seenCount} / ${films.length} films vus`;
+  document.getElementById("bar").style.width = (seenCount / films.length * 100) + "%";
 }
 
-// Lancement
-document.getElementById("quote").innerText = quotes[Math.floor(Math.random()*quotes.length)];
-filter.onchange = render;
-search.oninput = render;
+// Listeners
+document.getElementById("search").addEventListener('input', render);
+document.getElementById("filter").addEventListener('change', render);
 
-// On s'assure que le rendu se fait après le chargement du DOM
-window.addEventListener('DOMContentLoaded', render);
+// Lancement forcé
+render();
 </script>
 
 </body>

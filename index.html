@@ -36,17 +36,11 @@ h1 {
   color: white;
 }
 
-.header-img {
-  width:120px;
-  display:block;
-  margin:0 auto 15px;
-  border-radius:12px;
-}
-
 .quote {
   font-size:.9rem;
   opacity:.7;
   margin:10px 0 15px;
+  min-height: 1.2em;
 }
 
 .counter {
@@ -79,29 +73,19 @@ h1 {
   margin-bottom:25px;
 }
 
-input, select, button {
+input, select {
   background:#111118;
   color:white;
   border:none;
   padding:12px 16px;
   border-radius:14px;
   font-size:14px;
-  cursor: pointer;
-}
-
-button#random-btn {
-  background: linear-gradient(135deg, #9b6cff, #ff355d);
-  font-weight: bold;
-  transition: transform 0.2s;
-}
-
-button#random-btn:hover {
-  transform: scale(1.05);
+  outline: none;
 }
 
 .grid {
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
   gap:20px;
 }
 
@@ -113,24 +97,25 @@ button#random-btn:hover {
   position:relative;
   transition:.35s;
   cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.05);
 }
 
 .card:hover {
   transform:translateY(-4px);
-  background: rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.1);
 }
 
-.card h3 {
-  margin:0;
-  font-size:1.05rem;
+.card img {
+  width:100%;
+  border-radius:12px;
+  margin-bottom:10px;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  background: #111;
 }
 
-.card p {
-  font-size:.9rem;
-  opacity:.85;
-  margin-top:6px;
-  line-height: 1.4;
-}
+.card h3 { margin:0; font-size:1.05rem; }
+.card p { font-size:.9rem; opacity:.85; margin-top:6px; line-height: 1.4; }
 
 .badge {
   display:inline-block;
@@ -138,38 +123,19 @@ button#random-btn:hover {
   font-size:11px;
   padding:4px 10px;
   border-radius:999px;
-  font-weight: 500;
-  color: #fff;
+  background: rgba(255,255,255,0.1);
 }
 
-/* Couleurs Badges & Aura */
-.Weird { box-shadow:0 0 0 1px #9b6cff44; }
-.Weird .badge { background: #9b6cff; }
-
-.SF { box-shadow:0 0 0 1px #5ac8ff44; }
-.SF .badge { background: #5ac8ff; }
-
-.Dystopie { box-shadow:0 0 0 1px #ff784a44; }
-.Dystopie .badge { background: #ff784a; }
-
-.Psyché { box-shadow:0 0 0 1px #6dff9a44; }
-.Psyché .badge { background: #6dff9a; color: #000; }
-
-.Horreur { box-shadow:0 0 0 1px #ff355d44; }
-.Horreur .badge { background: #ff355d; }
-
-.Expérimental { box-shadow:0 0 0 1px #ff8bdc44; }
-.Expérimental .badge { background: #ff8bdc; color: #000; }
-
-.Thriller { box-shadow:0 0 0 1px #ffc24b44; }
-.Thriller .badge { background: #ffc24b; color: #000; }
-
-.Queer { box-shadow:0 0 0 1px #ff424b44; }
-.Queer .badge { background: #ff424b; }
-
 .seen {
-  opacity:.35;
-  filter:grayscale(.8) blur(.3px);
+  opacity:.3;
+  filter:grayscale(1);
+}
+
+.header-img {
+  width:120px;
+  display:block;
+  margin:0 auto 15px;
+  border-radius:12px;
 }
 
 .hint {
@@ -183,10 +149,10 @@ button#random-btn:hover {
 <body>
 
 <header>
-  <img src="images/logo.jpg" alt="Weird Cinema Logo" class="header-img">
+  <img src="images/logo.jpg" alt="Logo" class="header-img" onerror="this.style.display='none'">
   <h1>WEIRD CINEMA ARCHIVE</h1>
   <div class="quote" id="quote"></div>
-  <div class="counter" id="counter"></div>
+  <div class="counter" id="counter">🎞️ 0 / 0 visions</div>
   <div class="progress"><span id="bar"></span></div>
 </header>
 
@@ -203,7 +169,6 @@ button#random-btn:hover {
     <option>Thriller</option>
     <option>Queer</option>
   </select>
-  <button id="random-btn">🎲 Film aléatoire</button>
 </div>
 
 <div class="grid" id="grid"></div>
@@ -433,82 +398,68 @@ let films = [
   {title:"Suture", year:1993, desc:"Identité, doubles thriller expérimental", category:"Queer", img:"images/Suture.jpg"}
 ];
 
-const saved = JSON.parse(localStorage.getItem("seenFilms") || "{}");
-films.forEach(f=>{
-  if(saved[f.title]) f.seen = true;
-});
+const quotes = [
+  "Certains films ne veulent pas être compris.",
+  "Archive de visions étranges.",
+  "Des images qui laissent des traces.",
+  "Cinéma pour esprits divergents."
+];
 
+// --- LOGIQUE ---
+const savedSeen = JSON.parse(localStorage.getItem("seenFilms") || "{}");
 const grid = document.getElementById("grid");
 const filter = document.getElementById("filter");
 const search = document.getElementById("search");
-const randomBtn = document.getElementById("random-btn");
+const bar = document.getElementById("bar");
+const counterText = document.getElementById("counter");
 
 function render() {
   grid.innerHTML = "";
+  let seenCount = 0;
 
-  const visible = films.filter(f=>{
-    const matchCat = filter.value==="All" || f.category===filter.value;
-    const matchTxt = f.title.toLowerCase().includes(search.value.toLowerCase());
-    return matchCat && matchTxt;
+  const searchTerm = search.value.toLowerCase();
+  const filterValue = filter.value;
+
+  films.forEach(f => {
+    const isSeen = !!savedSeen[f.title];
+    if(isSeen) seenCount++;
+
+    const matchCat = filterValue === "All" || f.category === filterValue;
+    const matchTxt = f.title.toLowerCase().includes(searchTerm) || f.desc.toLowerCase().includes(searchTerm);
+
+    if (matchCat && matchTxt) {
+      const card = document.createElement("div");
+      card.className = `card ${f.category} ${isSeen ? "seen" : ""}`;
+      
+      card.innerHTML = `
+        <img src="${f.img}" alt="${f.title}" onerror="this.src='https://via.placeholder.com/300x450/111/fff?text=${encodeURIComponent(f.title)}'">
+        <h3>${f.title} (${f.year})</h3>
+        <p>${f.desc}</p>
+        <span class="badge">${f.category}</span>
+        <div class="hint">Cliquer pour marquer vu</div>
+      `;
+
+      card.onclick = () => {
+        savedSeen[f.title] = !savedSeen[f.title];
+        localStorage.setItem("seenFilms", JSON.stringify(savedSeen));
+        render();
+      };
+
+      grid.appendChild(card);
+    }
   });
 
-  visible.forEach(f=>{
-    const card = document.createElement("div");
-    card.className = `card ${f.category} ${f.seen?"seen":""}`;
-    card.id = `movie-${f.title.replace(/\s+/g, '-').toLowerCase()}`;
-    card.innerHTML = `
-      <img src="${f.img}" alt="${f.title}" style="width:100%; border-radius:12px; margin-bottom:10px;">
-      <h3>${f.title} (${f.year})</h3>
-      <p>${f.desc}</p>
-      <span class="badge">${f.category}</span>
-      <div class="hint">clique pour marquer comme vu</div>
-    `;
-
-    // Gestion erreur image
-    card.querySelector('img').onerror = function() {
-      this.src = 'https://via.placeholder.com/300x450/111118/FFFFFF?text=Image+Bientôt';
-    };
-
-    card.onclick = ()=>{
-      f.seen = !f.seen;
-      saved[f.title] = f.seen;
-      localStorage.setItem("seenFilms", JSON.stringify(saved));
-      render();
-    };
-
-    grid.appendChild(card);
-  });
-
-  const seenCount = films.filter(f=>f.seen).length;
-  document.getElementById("counter").innerText =
-    `🎞️ ${seenCount} / ${films.length} visions intégrées`;
-
-  document.getElementById("bar").style.width =
-    (seenCount / films.length * 100) + "%";
+  counterText.innerText = `🎞️ ${seenCount} / ${films.length} visions intégrées`;
+  bar.style.width = films.length > 0 ? (seenCount / films.length * 100) + "%" : "0%";
 }
 
-// Fonction Aléatoire
-randomBtn.onclick = () => {
-  const notSeen = films.filter(f => !f.seen);
-  if (notSeen.length === 0) {
-    alert("Tu as tout vu ! Incroyable.");
-    return;
-  }
-  const randomMovie = notSeen[Math.floor(Math.random() * notSeen.length)];
-  
-  // Reset des filtres pour voir le film sélectionné
-  filter.value = "All";
-  search.value = randomMovie.title;
-  render();
-  
-  // Petit effet visuel
-  const target = document.getElementById(`movie-${randomMovie.title.replace(/\s+/g, '-').toLowerCase()}`);
-  if(target) target.style.boxShadow = "0 0 30px #9b6cff";
-};
-
+// Initialisation
+document.getElementById("quote").innerText = quotes[Math.floor(Math.random()*quotes.length)];
 filter.onchange = render;
 search.oninput = render;
-render();
+
+// Lancement au chargement de la page
+window.onload = render;
 </script>
 
 </body>
